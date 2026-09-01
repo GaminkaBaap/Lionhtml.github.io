@@ -1,25 +1,61 @@
-<html <hand>
-
-</hand>
-</hand>
-<totle>
-    HELLO EVERYONE 
-</totle>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Abubakar - Modern Web Designer</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f9f9f9; text-align: center; }
+        h1, h2, h3 { color: #333; }
+        .box { background: white; padding: 20px; border-radius: 10px; width: 320px; margin: 20px auto; box-shadow: 0 0 10px #ccc; }
+        input { display: block; margin: 10px auto; padding: 10px; width: 90%; border: 1px solid #ccc; border-radius: 5px; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 5px; font-size: 16px; }
+        button:hover { background: #0056b3; }
+        #user { display: none; }
+        hr { margin: 40px 0; }
+    </style>
+</head>
 <body>
-    ABOUT ME 
-</body>
-<h1>Welcome to My Website</h1>
-<h2>About Me: I am Abubakar, a Modern Web Designer Crafting Digital Solutions</h2>
-<h3>Core Skills & Expertise</h3>
-<h4>UI/UX Styling, Modern HTML5 & Web Animations</h4>
-<h5>Optimized for All Devices & Desktop Screens</h5>
-<h6>Let's Turn Your Ideas into Reality</h6>
-<p><b>Algebraic Equation:</b> a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup></p>
-<p><b>Chemistry Note:</b> The chemical formula of water is H<sub>2</sub>O</p>
-    <h1>My Name Is Abubakar</h1>
-    <h2>I Love Coding</h2>
-    <h3>My Favourite Game is GTA 5<h3>
-        <h4>I Like Playing Games</h4>
-        <h5>HTML is Easy</h5>
-        <h6>My First HTML Page</h6>
-</html>
+
+    <!-- Tumhara Design -->
+    <h1>Welcome to My Website</h1>
+    <h2>About Me: I am Abubakar, a Modern Web Designer Crafting Digital Solutions</h2>
+    <h3>Core Skills & Expertise</h3>
+    <h4>UI/UX Styling, Modern HTML5 & Web Animations</h4>
+    <h5>Optimized for All Devices & Desktop Screens</h5>
+    <h6>Let's Turn Your Ideas into Reality</h6>
+
+    <p><b>Algebraic Equation:</b> a<sup>2</sup> + b<sup>2</sup> = c<sup>2</sup></p>
+    <p><b>Chemistry Note:</b> The chemical formula of water is H<sub>2</sub>O</p>
+
+    <hr>
+
+    <!-- Login + Register Box -->
+    <div class="box" id="login-box">
+      <h2>Register</h2>
+      <input type="email" id="email" placeholder="Email">
+      <input type="password" id="password" placeholder="Password">
+      <button onclick="register()">Register</button>
+
+      <h2>Login</h2>
+      <input type="email" id="email2" placeholder="Email">
+      <input type="password" id="password2" placeholder="Password">
+      <button onclick="login()">Login</button>
+    </div>
+
+    <div class="box" id="user">
+      <h3>Welcome! <span id="user-email"></span></h3>
+      <button onclick="logout()">Logout</button>
+    </div>
+
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
+
+  // TUMHARA FIREBASE CONFIG
+  const firebaseConfig = {
+    apiKey: "AIzaSyCizcfTTN0k5GHuIPz0aojJ3QR:",
+    authDomain: "lion-login-html.firebaseapp.",
+    projectId: "lion-login-html",
+    storageBucket: "lion-login-html.firebases",
+    messagingSenderId: "446370779992",
+    appId: "1:446370779992:web:86fe
