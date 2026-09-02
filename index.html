@@ -1,6 +1,8 @@
-<!DOCTYPE html>
-<html>
+  <!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Register</title>
     <style>
         body { font-family: Arial; padding: 50px; background: #f2f2f2; text-align: center; }
@@ -28,35 +30,23 @@
     </div>
 
     <div class="box" id="user">
-      <h3>Welcome!</h3>
-      <p><span id="user-email"></span></p>
+      <h3>Welcome! 🎉</h3>
+      <p><b><span id="user-email"></span></b></p>
       <button onclick="logout()">Logout</button>
     </div>
-h1>My Name is Abubakar</h1>
-8. <h2>I Love Coding</h2>
 
-9. <h3>My Favourite Game is GTA 5</h3>
-
-
-10. <h4>I Like Playing Games</h4>
-
-11. <h5>HTML is Easy</h5>
-
-
-12. <h6>My First HTML Page</h6>
-
-    
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-auth.js";
 
+  // TUMHARA SAHI CONFIG
   const firebaseConfig = {
-    apiKey: "AIzaSyCizcfTTN0k5GHuIPz0aojJ3QR",
+    apiKey: "AIzaSyCizcfTTNO0k5GHuIPz0aojJ3QR32l7M-U",
     authDomain: "lion-login-html.firebaseapp.com",
     projectId: "lion-login-html",
-    storageBucket: "lion-login-html.appspot.com",
+    storageBucket: "lion-login-html.firebasestorage.app",
     messagingSenderId: "446370779992",
-    appId: "1:446370779992:web:86fe9eb5176f05",
+    appId: "1:446370779992:web:86fe9eb5176f0570b84b2d",
     measurementId: "G-8C67Z75SHX"
   };
 
@@ -72,26 +62,4 @@ h1>My Name is Abubakar</h1>
   }
 
   window.login = () => {
-    const email = document.getElementById('email2').value;
-    const password = document.getElementById('password2').value;
-    signInWithEmailAndPassword(auth, email, password)
-    .then(() => alert("Login Success!"))
-    .catch((e) => alert("Error: " + e.message));
-  }
-
-  window.logout = () => { signOut(auth); }
-
-  onAuthStateChanged(auth, (user) => {
-    if (user) {
-      document.getElementById('login-box').style.display = 'none';
-      document.getElementById('user').style.display = 'block';
-      document.getElementById('user-email').innerText = user.email;
-    } else {
-      document.getElementById('login-box').style.display = 'block';
-      document.getElementById('user').style.display = 'none';
-    }
-  });
-</script>
-
-</body>
-</html>
+    const email = document.getElementById('email2').
