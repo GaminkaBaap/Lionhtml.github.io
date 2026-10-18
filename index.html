@@ -1,61 +1,233 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-    <title>My Webpage</title>
+<meta name="monetag" content="dbfcd3613774dd84077b14c8419d46df">
+<script src="https://alwingulla.com/88/tag.min.js" data-zone="11993930" async data-cfasync="false"></script>
+<script src="/launch_url.js?v=compact-v1"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FivePlay — GTA V Web</title>
+<link rel="icon" type="image/png" href="/branding/grandv-logo.png?v=20261016">
+<style>
+#return-launcher { display: none !important; }
+
+	html, body { margin: 0; height: 100%; background: #000; color: #ccc; font: 12px monospace; overflow: hidden; }
+	#canvas { display: block; position: absolute; left: 0; top: 0; width: 100vw; height: 100vh; background: #000; touch-action: none; }
+	/* title screen: the game's loading screen (LOADINGSCREEN_STARTUP) on its 1280x720 stage, scaled to the window; see the script below */
+	@font-face { font-family: 'Chalet'; src: url('/b/8b0b5899ed/title/chalet.woff') format('woff'); }
+	#loading { position: fixed; inset: 0; background: #000; overflow: hidden; transition: opacity .8s; z-index: 5; }
+	#loading.done { opacity: 0; pointer-events: none; }
+	#ls-stage { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; font: 12px Chalet, sans-serif; color: #fff; }
+	#ls-screens { position: absolute; inset: 0; }
+	.ls-screen { position: absolute; inset: 0; }
+	/* one camera per layer, so layers composite in display-list order like Scaleform (no depth test): 640 / tan(55 deg / 2) = 1229, Scaleform's default 3D camera
+	   at the stage centre (moved against the screen's slide, see the script) */
+	.ls-cam { position: absolute; inset: 0; perspective: 1229px; perspective-origin: 640px 360px; }
+	.ls-layer { position: absolute; left: 0; top: 0; transform-origin: 0 0; background-size: 100% 100%; }
+	#ls-logo { position: absolute; left: 95px; top: 492.5px; width: 186px; height: 186px; }
+	#ls-bars { position: absolute; right: 96px; bottom: 54px; display: flex; align-items: flex-end; gap: 3px; max-width: 1088px; }
+	.ls-bar { height: 24px; padding: 0 6px; display: flex; align-items: center; background: rgba(0, 0, 0, .706); border-radius: 2.4px; white-space: nowrap; }
+	#modes { padding: 0; background: none; height: 24px; flex: none; }
+	#modes button { display: flex; align-items: center; height: 24px; padding: 0; border: 0; background: none; color: #fff; font: 12px Chalet, sans-serif; cursor: pointer; }
+	#modes button:disabled { cursor: default; }
+	#modes button[hidden] { display: none; }
+	#modes.ask button:not(:disabled) .ls-key { animation: ls-ask 1.2s ease-in-out infinite; }
+	@keyframes ls-ask { 50% { opacity: .35; } }
+	.ls-key { margin-left: 4px; min-width: 12px; height: 15px; padding: 0 4px; line-height: 16px; border-radius: 2px; background: #fff; color: #000; font-size: 10px; text-transform: uppercase; }
+	.ls-spin { flex: none; width: 22px; height: 22px; margin-left: 2px; background: url('/b/8b0b5899ed/title/spinner.png') center / 24px 24px no-repeat; animation: ls-spin 2s steps(60) infinite; }
+	@keyframes ls-spin { from { transform: rotate(0deg) scaleX(-1); } to { transform: rotate(-360deg) scaleX(-1); } }
+	#label { text-shadow: .85px .85px 1px rgba(0, 0, 0, .45); }
+	#pct { margin-left: 15px; font-variant-numeric: tabular-nums; }
+	/* Live loading activity belongs to the bottom-right loading panel. */
+	#ls-status { position: relative; box-sizing: border-box; width: 560px; height: 112px; flex: none; padding: 4px 8px 10px; flex-direction: column; align-items: stretch; overflow: hidden; }
+	#ls-status-main { display: flex; align-items: center; height: 24px; flex: none; }
+	#ls-status-main #label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+	#ls-status-main #pct { margin-left: auto; padding-left: 15px; }
+	#ls-log { padding: 2px 0 0; display: flex; flex: 1; min-height: 0; overflow: hidden; flex-direction: column; gap: 3px; font: 11px/1.35 Chalet, sans-serif; color: rgba(220, 220, 220, .85); text-shadow: 0 0 2px #000; white-space: normal; pointer-events: none; }
+	#console { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
+	#console:empty { display: none; }
+	#data { color: #6a9; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; flex-shrink: 0; }
+	#bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(255, 255, 255, .08); }
+	#fill { height: 100%; width: 0; background: #7cc576; }
+	#hud { position: fixed; left: 8px; bottom: 8px; max-width: 60vw; white-space: pre-wrap; opacity: .8; pointer-events: none; }
+
+#controller-status { position: fixed; right: 8px; top: 8px; z-index: 10; max-width: 45vw; padding: 6px 9px; color: #fff; background: rgba(0,0,0,.75); pointer-events: none; }
+
+	#game-page-actions #touch-toolbar { position: static; flex-wrap: wrap; justify-content: flex-end; }
+</style>
+<script src="/ui_preferences.js?v=custom-preset-v5"></script>
+<script src="/menyoo_presets.js?v=xml-v3"></script>
+<script src="/save_profiles.js?v=save-profiles-v1"></script>
+<script src="/keyboard_controls.js?v=keyboard-v1"></script>
 </head>
-
 <body>
+<canvas id="canvas" width="800" height="600" tabindex="0"></canvas>
+<div id="hud"></div>
 
-    <h1>My Favorite Things</h1>
+<div id="loading"><div id="ls-stage"><div id="ls-screens"></div><img id="ls-logo" src="/branding/grandv-logo.png?v=20261016" alt=""><div id="ls-bars"><div id="ls-status" class="ls-bar"><div id="modes" class="ls-bar">Loading game...</div><div id="ls-status-main"><span id="label">Starting...</span><span id="pct">0%</span><i class="ls-spin"></i></div><div id="ls-log"><div id="data"></div><div id="console"></div></div><div id="bar"><div id="fill"></div></div></div></div></div></div>
 
-    <h2>Favorite Foods</h2>
-    <ul>
-        <li>Biryani</li>
-        <li>Pizza</li>
-        <li>Burger</li>
-        <li>Pasta</li>
-    </ul>
+<div id="controller-status" role="status" hidden></div>
+<script src="/loading_music.js?v=no-media-keys-v15"></script><script src="/loading_intro.js?v=no-media-keys-v9"></script>
+<script src="/controller.js?runtime=menyoo-pad-v2"></script>
+<link rel="stylesheet" href="/dialog_controls.css?v=dock-v1">
+<script src="/launcher_dialogs.js?v=menu-focus-v3"></script>
 
-    <h2>Programming Languages</h2>
-    <ol type="A">
-        <li>JavaScript</li>
-        <li>Python</li>
-        <li>Java</li>
-        <li>C++</li>
-    </ol>
+<script src="/touch_art/cpu_settings.js?v=auto90-low-tiers-v2"></script>
+<script src="/touch_art/game_ui.js?v=single-fps-lag-v3"></script>
+<script src="/touch_art/viewport.js?v=1"></script>
+<script src="/touch_controls.js?v=menu-gesture-20261015"></script>
+<script src="/graphics_settings.js?v=hbao-v7"></script>
+<script src="/pacing_settings.js?v=experimental-high-v1"></script>
 
-    <h2>My Learning Path</h2>
 
-    <ul>
-        <li>Frontend
-            <ul>
-                <li>HTML</li>
-                <li>CSS</li>
-                <li>JavaScript</li>
-            </ul>
-        </li>
+<script src="/native_refresh.js?v=experimental-high-v1"></script>
 
-        <li>Backend
-            <ul>
-                <li>Node.js</li>
-                <li>Express.js</li>
-                <li>MongoDB</li>
-            </ul>
-        </li>
 
-        <li>Tools
-            <ul>
-                <li>Git</li>
-                <li>GitHub</li>
-                <li>VS Code</li>
-            </ul>
-        </li>
-    </ul>
+<script src="/pose_bridge.js?v=trainer-story-v1"></script>
+<script src="/menyoo_source_controls.js?v=controller-v2"></script>
+<script src="/mod_traffic.js?v=pool16-v1"></script>
 
-    <h2>Web Technologies</h2>
-<dl>
-    <dt>HTML</dt>
-     <dd>hypertext markup language</dd>
-</dl>
-</body>
-</html>
+
+
+
+
+
+<script src="/b/8b0b5899ed/userdata_persistence.js?scope=save-profiles-v1"></script>
+<script src="/shader_mods.js?v=shader-data-v1"></script>
+<script src="/mod_storage.js?v=content-v14-shader"></script><script src="/map_storage.js?v=folder-drop-v2"></script>
+<script src="/client_logs.js?v=texture-upload-v2"></script>
+<script src="/b/8b0b5899ed/movie_audio.js?v=audio-v2"></script><script src="/b/8b0b5899ed/movie_page.js?v=audio-v2"></script><script src="/b/8b0b5899ed/movie_index.js?v=main-v1"></script><script type="module">
+// Page of the browser build. The engine runs in a dedicated worker (loader.js: its "main thread", where the static constructors and
+// main() run and which may block); the page only owns the canvas, which is transferred to that worker and on to the GPU worker.
+// Query string: ?args=-flag1,-flag2=value (added to the engine command line), ?shot=N (screenshot of every N-th present to the dev server).
+const q = GTALaunchUrl.expand(location.search);
+// Player build: developer launch switches are unavailable.
+const playerKeys=new Set(["mode", "map", "custommap", "saveprofile", "fps", "scale", "low", "res", "language", "mousegain", "controller", "granular", "safeuploads", "fxaa", "shadows", "cores", "bcfallback", "bghistory", "pipelast", "cbtemplate", "cbsegments", "usermod", "modmodel", "modpackages", "modpool", "modshare", "modtraffic", "modstory", "trainer", "poseproof", "intro", "texturequality", "reflectionquality", "waterquality", "particlequality", "grassquality", "anisotropic", "lodscale", "pedlod", "vehiclelod", "density", "pedvariety", "vehiclevariety", "postfx", "motionblur", "dof", "shadowquality", "softshadows", "ssao", "drawdistance", "fogvolumes", "particleshadows", "longshadows", "flightstreaming", "distantlights"]);for(const key of [...q.keys()])if(!playerKeys.has(key))q.delete(key);if(q.get("poseproof")!=="4")q.delete("poseproof");
+const pageActions = GTAGameUI.mount();
+const loadingMusic = GTALoadingMusic.mount(document.getElementById('loading'));
+let introFinished = q.get('intro') === '0', startTitle = () => {};
+const afterIntro = () => { introFinished = true; startTitle(); loadingMusic.start(); };
+const loadingIntro = GTALoadingIntro.mount(document.getElementById('loading'), !introFinished, afterIntro, loadingMusic);
+if (q.get('intro') === '0') loadingMusic.start();
+const fivemMetadataProbe=q.get('fivem')==='metadata'&&q.get('mode')==='sandbox'&&q.get('poseproof')==='3'&&!q.has('usermod')&&!q.has('carmod')&&q.get('multiplayer')!=='1';
+const fivemVehicleProbe=q.get('fivem')==='vehicle'&&q.get('mode')==='sandbox'&&q.get('poseproof')==='3'&&!q.has('usermod')&&!q.has('carmod')&&q.get('multiplayer')==='1';
+const fivemPlayerProbe=q.get('fivem')==='player'&&q.get('mode')==='sandbox'&&q.get('poseproof')==='3'&&!q.has('usermod')&&!q.has('carmod')&&q.get('multiplayer')==='1';
+// Save storage is chosen before engine startup; undecided launches use the launcher.
+if (!['story','sandbox'].includes(q.get('mode'))) {
+  location.replace('launcher.html'+location.search+location.hash);
+  await new Promise(()=>{});
+}
+const userdataScope = GTAUserdataPersistence.scope(q.get('mode'));
+/* return-launcher removed */
+const fpsBenchmarkToken=q.get('fpsdiag')==='1'&&q.get('fpsbench')==='1'&&(!q.has('fps')||q.get('fps')==='60')&&!q.has('fpsdebug')&&!q.has('nativehz')&&q.get('mode')==='sandbox'&&!q.has('poseproof')&&!q.has('usermod')&&!q.has('carmod')&&!q.has('multiplayer')?crypto.randomUUID():null;
+const fpsWorldReady=()=>{const loading=document.getElementById('loading');return !loading||loading.classList.contains('done');};
+let controllerBridge=null;
+const touchControls=GTATouchControls.mount({release:()=>controllerBridge?.release()});
+const touchToolbar = document.getElementById('touch-toolbar');
+if (touchToolbar) pageActions.append(touchToolbar);
+// Retired high-rate and uncapped URLs use the validated default.
+if (!['24','30','60'].includes(q.get('fps'))) q.set('fps','60');
+// URL prefix of everything this page loads (loader, workers, engine, shaders, title art): empty on the dev server; on the PHP host (phase3/host/index.php) it puts the page's own
+// text `/b/8b0b5899ed` through str_replace to `/b/<build id>`, so those files are cached for ever under URLs that change when the build does.
+const BASE = '/b/8b0b5899ed'.charAt(0) === '_' ? '' : '/b/8b0b5899ed';
+// ?log=1: the page, the engine threads and the workers send their log lines to the dev server (browser.log, browser_<ip>.log); off by default: the player's upload
+// bandwidth and this thread's time. The loading screen's own log line and the browser console do not depend on it.
+const speechProbe=q.get('speechproof')==='1'&&q.get('mode')==='sandbox'&&q.get('multiplayer')!=='1'&&q.get('poseproof')==='2'&&!q.has('usermod')&&!q.has('carmod');
+const trainer=q.get('trainer')==='1'&&['story','sandbox'].includes(q.get('mode'))&&q.get('multiplayer')!=='1'&&q.get('poseproof')==='4';
+const storyModTraffic=q.get('modstory')==='1'&&q.get('modtraffic')==='1'&&q.has('usermod')&&q.get('mode')==='story'&&q.get('multiplayer')!=='1'&&q.get('poseproof')==='4';
+const storyModSession=q.get('mode')==='story'&&(trainer||storyModTraffic)&&q.get('multiplayer')!=='1'&&q.get('poseproof')==='4';
+const modTraffic=q.get('modtraffic')==='1'&&q.has('usermod')&&(q.get('mode')==='sandbox'||storyModTraffic)&&q.get('multiplayer')!=='1'&&q.get('poseproof')==='4';
+const remoteLog = q.get('log') === '1';
+const clientLog=q.get('clientlog')==='1';
+const clientLogs=GTAClientLogs.mount({full:remoteLog||clientLog});
+const postLog = (text) => { clientLogs.add('page',text); if (remoteLog) fetch('/log', { method: 'POST', body: text }).catch(() => {}); };
+if(q.get('lagdiag')==='1')GTALagDiagnostics.mount(postLog);
+// Crash reports from the engine threads (prejs.js __crash, loader.js onAbort/onExit): shown in the bottom-left line with a hint when it looks like memory, and posted to the host's log
+// only with ?log=1 (at most 3 per page, ~10 KB each; they were always posted until 2026-10-06, when 10,000 visitors a day made 5,500 posts and a log file per visitor). A normal exit does not report.
+{
+	let posted = 0;
+	new BroadcastChannel('game-crash').onmessage = (ev) => {
+		const m = ev.data;
+		const memory = /memory|OOM|Aborted\(|RangeError|grow/i.test(m.text);
+		const dev = ' deviceMemory ' + (navigator.deviceMemory || '?') + ' GB, cores ' + navigator.hardwareConcurrency;
+		if (remoteLog && posted++ < 3) fetch('/log', { method: 'POST', body: '[page] CRASH (' + m.kind + ', ' + m.thread + ' thread, wasm heap ' + m.heap + ' MB,' + dev + ', ' + location.search + '): ' + m.text + '\n' + (m.tail || []).slice(-40).map(line => String(line).slice(0, 1000)).join('\n') + '\n' }).catch(() => {});
+		const el = document.getElementById('hud');
+		if (el) { el.dataset.crashDetails = String(m.text); el.textContent = 'The game stopped (' + m.kind + '): ' + m.text.split('\n')[0].slice(0, 200) + (memory ? ' - this looks like a lack of memory: close other tabs and reload.' : ' - reload the page.'); el.style.color = '#f96'; }
+	};
+}
+// ---- title screen: the game's own loading screen, LOADINGSCREEN_STARTUP (scaleform_frontend.rpf), redone in HTML ----------------------------------------
+// Ported from its ActionScript (com.rockstargames.gtav.loadingScreens.LOADINGSCREEN_STARTUP, decompiled with JPEXS FFDec) as it plays while the game loads
+// (CTX_GAMELOAD). On the 1280x720 stage (scaled to the window, black outside 16:9): the built-in beach screen and the 17 loadingscreen<N> art screens in one of
+// the movie's six random orders; each is a background panel tilted in 3D (Scaleform's camera: 55 degree field of view around the stage centre, pivot at the
+// layer's top-left; Scaleform's +Z points away from the viewer, CSS's towards it, hence the negated angles) and foreground cut-outs. Every 14 s the next screen
+// slides in (0.85 s, cubic in-out, from alternating sides) and the old one out; a screen's layers tween linearly to their end values over 42 s. The GTA V logo
+// sits bottom left and the instructional button bar bottom right at the boot-time safe zone (7.5 %, CHudTools::GetFakeLoadingScreenSafeZone).
+// Art, logo, spinner and the font ($Font2 = Chalet London 1960) are the game's (phase3/make_title.py, served at /b/8b0b5899ed/title/).
+let stopTitle = () => {};
+{
+	const stage = document.getElementById('ls-stage'), holder = document.getElementById('ls-screens');
+	const fit = () => {
+		const s = Math.min(innerWidth / 1280, innerHeight / 720);
+		stage.style.transform = 'translate(' + (innerWidth - 1280 * s) / 2 + 'px,' + (innerHeight - 720 * s) / 2 + 'px) scale(' + s + ')';
+	};
+	fit();
+	addEventListener('resize', fit);
+	const L = (tex, w, h, x, y, yr, to) => ({ tex, w, h, x, y, yr, to });
+	const BG = (n, yr, to, x = 98) => L('ls' + n + '_background', 1024, 512, x, 95, yr, to);
+	const FG = (n, name, w, h, x, y, toX, yr = 0) => L('ls' + n + '_' + name, w, h, x, y, yr, { x: toX });
+	const SCREENS = [		// the movie's loadingScreens array: setup (size, position, _yrotation) and tweenTo of every layer, bottom to top
+		[L('beach_bg.stock', 1024, 512, 98, 95, 20, { yr: -6, xr: 5 }), L('beach_fg.stock', 343, 629, 480, 95, 0, { x: 720 })],
+		null,		// loadingscreen_builtin1 (Frisk): its symbols are not in this build's movie, and no order uses it
+		[BG(0, 7, { yr: -7 }), FG(0, 'foreground', 299, 599, 360, 140, 560, 7)],
+		[BG(1, 6, { yr: -12 }), FG(1, 'foreground', 503, 206, 300, 465, 480), FG(1, 'foreground_franklin', 368, 588, 440, 140, 745)],
+		[BG(2, 7, { yr: -5, xr: 5 }), FG(2, 'foreground', 311, 558, 745, 200, 450), FG(2, 'foreground_chop', 320, 512, 640, 260, 310)],
+		[BG(3, 12, { yr: -4 }, 110), FG(3, 'foreground', 412, 609, 440, 120, 730)],		// its foreground_car is an "isInFla" layer missing from the movie: the game shows no car
+		[BG(4, 7, { yr: -4, xr: 5 }), FG(4, 'foreground', 251, 643, 400, 85, 250)],
+		[BG(5, 7, { yr: -6 }), FG(5, 'foreground', 389, 640, 450, 95, 700)],
+		[BG(6, 7, { yr: 0, xr: 5 }), FG(6, 'foreground', 367, 603, 410, 115, 800)],
+		[BG(7, 6, { yr: -6, xr: 5 }), FG(7, 'foreground', 311, 625, 860, 95, 520)],
+		[BG(8, 7, { yr: -5, xr: 5 }), FG(8, 'foreground', 492, 497, 400, 190, 660)],
+		[BG(9, 7, { yr: -3, xr: 5 }), FG(9, 'foreground', 331, 675, 220, 50, 140)],
+		[BG(10, 6, { yr: -5, xr: 5 }), FG(10, 'foreground', 352, 682, 545, 65, 485)],
+		[BG(11, 7, { yr: -3, xr: 5 }), FG(11, 'foreground', 344, 669, 309, 51, 424)],
+		[BG(12, 6, { yr: -4 }), FG(12, 'foreground_michael', 462, 677, 345, 42, 220)],
+		[BG(13, 5, { yr: -6, xr: 5 }), FG(13, 'foreground', 399, 681, 430, 39, 250)],
+		[BG(14, 6, { yr: -2, xr: 5 }), FG(14, 'foreground', 392, 631, 650, 95, 850)],
+		[BG(15, 6, { yr: -3, xr: 5 }), FG(15, 'foreground', 385, 642, 404, 78, 261)],
+		[BG(16, 6, { yr: -3, xr: 5 }), FG(16, 'foreground', 300, 600, 300, 150, 400)],
+	];
+	const ORDERS = [[0, 16, 18, 3, 12, 2, 17, 10, 9, 8, 15, 6, 11, 14, 4, 7, 13], [0, 4, 6, 17, 11, 16, 18, 7, 9, 15, 3, 14, 10, 13, 2, 8, 12],
+		[0, 7, 16, 14, 13, 3, 10, 2, 15, 18, 8, 9, 4, 17, 12, 6, 11], [0, 8, 18, 9, 13, 4, 11, 14, 7, 17, 6, 12, 3, 16, 2, 15, 10],
+		[0, 11, 12, 7, 18, 14, 9, 13, 4, 2, 15, 11, 8, 16, 6, 3, 17], [0, 10, 16, 2, 13, 17, 8, 9, 18, 3, 12, 6, 7, 4, 14, 15, 10]];
+	const order = ORDERS[Math.floor(Math.random() * ORDERS.length)];
+	const cubicInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(2 - 2 * t, 3) / 2);		// TweenStar Cubic.easeInOut
+	// the screen's horizontal position; its layers' cameras stay at the stage centre (Scaleform's camera does not move with the clip)
+	const slide = (s, x) => {
+		s.el.style.transform = 'translateX(' + x + 'px)';
+		for (const c of s.cams) c.style.perspectiveOrigin = (640 - x) + 'px 360px';
+	};
+	const place = (l, x, yr, xr) => { l.el.style.transform = 'translate3d(' + x + 'px,' + l.y + 'px,0) rotateY(' + -yr + 'deg) rotateX(' + -xr + 'deg)'; };
+	// a screen's images, decoded before it may show (the movie waits for its texture dictionary the same way)
+	const prepare = (i) => {
+		const layers = SCREENS[order[i]].map((d) => ({ ...d, img: Object.assign(new Image(), { src: '/b/8b0b5899ed/title/art/' + d.tex + (d.tex.endsWith('.stock') ? '.png?v=layered-stock-v2' : '.webp') }) }));
+		return Promise.all(layers.map((l) => l.img.decode().catch(() => {}))).then(() => layers);
+	};
+	let active = null, leaving = null, index = 0, alt = -1, timer = 0, raf = 0, stopped = false;
+	const show = (defs) => {
+		const now = performance.now();
+		alt = alt <= 0 ? 1 : -1;		// updateScreenIndex: the side alternates
+		const el = document.createElement('div');
+		el.className = 'ls-screen';
+		const cams = [];
+		const s = { el, slideFrom: alt * 1280, start: now, settled: 0, cams, layers: defs.map((d) => {
+			const cam = document.createElement('div'), e = document.createElement('div');
+			cam.className = 'ls-cam';
+			e.className = 'ls-layer';
+			e.style.width = d.w + 'px'; e.style.height = d.h + 'px';
+			e.style.backgroundImage = 'url(' + d.img.src + ')';
+			cam.appendChild(e);
+			el.appendChild(cam);
+			cams.push(cam);
+			return { el: e, y: d.y, x0: d.x, yr0: d.yr, xr0: 0, x1: d.to.x ?? d.x, yr1: d.to.yr ?? d.yr, xr1: d.to.xr ?? 0 };
+		}) };
+		for (const l of s.l
